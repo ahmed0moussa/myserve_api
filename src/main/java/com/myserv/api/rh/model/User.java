@@ -1,5 +1,6 @@
 package com.myserv.api.rh.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -12,6 +13,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -40,6 +42,7 @@ public class User {
     @Indexed(name = "email")
     private String email;
 
+    @JsonIgnore
     @NotBlank
     @Size(max = 120)
     @Indexed(name = "password")
@@ -47,6 +50,22 @@ public class User {
 
     @DBRef
     private Set<Roles> roles = new HashSet<>();
+
+    public User(String jsonString) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            User user = objectMapper.readValue(jsonString, User.class);
+            this.id = user.getId();
+            this.firstName = user.getFirstName();
+            this.lastName = user.getLastName();
+            this.email = user.getEmail();
+            this.password = user.getPassword();
+            this.roles = user.getRoles();
+        } catch (Exception e) {
+            // Handle the exception (e.g., log the error, throw an exception, etc.)
+            // Note: Catching a generic Exception is not recommended in production code. Be more specific if possible.
+        }
+    }
 
     public User(String id, String firstName,String lastName, String email, String password, Set<Roles> roles) {
         this.id = id;

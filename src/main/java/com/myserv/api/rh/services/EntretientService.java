@@ -44,7 +44,7 @@ public class EntretientService {
         return feedBackRepository.findAll();
     }
 
-    public Entretien createEntretien(Entretien entretien, String email, String feedback, String specialite)  throws IOException {
+    public Entretien createEntretien(Entretien entretien, String email, String feedbackId, String specialiteId)  throws IOException {
 
        /* if (file != null && !file.isEmpty()) {
             String loadFileId = fileService.addFile(file);
@@ -52,10 +52,10 @@ public class EntretientService {
         }*/
         //String loadFileId = fileService.addFile(file);
         User user = userRepository.findByEmail(email).orElseThrow();
-        FeedBack feedBack = feedBackRepository.findById(feedback).orElseThrow();
-        Specialite specialite1 = specialiteRepository.findById(specialite).orElseThrow();
+        FeedBack feedBack = feedBackRepository.findById(feedbackId).orElseThrow();
+        Specialite specialite1 = specialiteRepository.findById(specialiteId).orElseThrow();
         entretien.setFeedback(feedBack);
-        entretien.setRecruteur(user.getId());
+        entretien.setRecruteur(user);
         entretien.setSpecialite(specialite1);
         //entretien.setLoadFileId(loadFileId);
         return entretienRepository.save(entretien);

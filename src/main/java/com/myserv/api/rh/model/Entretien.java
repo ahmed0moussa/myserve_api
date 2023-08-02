@@ -49,7 +49,7 @@ public class Entretien {
     private String commentaire ;
 
     @Indexed(name = "recruteur")
-    private String recruteur ;
+    private User recruteur ;
 
 
     @Indexed(name = "loadfileid")

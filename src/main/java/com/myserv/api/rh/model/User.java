@@ -26,8 +26,13 @@ public class User {
 
     @NotBlank
     @Size(max = 20)
-    @Indexed(name = "username")
-    private String username;
+    @Indexed(name = "firstName")
+    private String firstName;
+
+    @NotBlank
+    @Size(max = 20)
+    @Indexed(name = "lastName")
+    private String lastName;
 
     @NotBlank
     @Size(max = 50)
@@ -43,9 +48,10 @@ public class User {
     @DBRef
     private Set<Roles> roles = new HashSet<>();
 
-    public User(String id, String username, String email, String password, Set<Roles> roles) {
+    public User(String id, String firstName,String lastName, String email, String password, Set<Roles> roles) {
         this.id = id;
-        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.roles = roles;
@@ -55,15 +61,17 @@ public class User {
 
     }
 
-    public User(String username, String email, String password, Set<Roles> roles) {
-        this.username = username;
+    public User(String firstName,String lastName, String email, String password, Set<Roles> roles) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.roles = roles;
     }
 
-    public User(String username, String email, String password) {
-        this.username = username;
+    public User(String firstName,String lastName, String email, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.email = email;
         this.password = password;
     }
@@ -76,12 +84,20 @@ public class User {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getEmail() {

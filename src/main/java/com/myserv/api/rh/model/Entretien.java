@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 
@@ -25,15 +27,17 @@ public class Entretien {
     @Indexed(name = "prenom")
     private String prenom ;
 
-    @JsonFormat(pattern="dd/MM/yyyy")
+    @JsonFormat(pattern="yyyy-MM-dd")
     @Indexed(name = "datecreation")
     private Date datecreation ;
 
     @JsonFormat(pattern="yyyy-MM-dd")
-    @LastModifiedDate
     @Indexed(name = "datemodif")
     private Date  datemodif ;
 
+    @Indexed(name = "time")
+    @JsonFormat(pattern = "HH:mm")
+    private String time ;
 
     @Indexed(name = "feedback")
     private FeedBack feedback ;

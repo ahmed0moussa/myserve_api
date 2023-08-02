@@ -44,14 +44,14 @@ public class EntretientService {
         return feedBackRepository.findAll();
     }
 
-    public Entretien createEntretien(Entretien entretien, String username, String feedback, String specialite)  throws IOException {
+    public Entretien createEntretien(Entretien entretien, String email, String feedback, String specialite)  throws IOException {
 
        /* if (file != null && !file.isEmpty()) {
             String loadFileId = fileService.addFile(file);
             entretien.setLoadFileId(loadFileId);
         }*/
         //String loadFileId = fileService.addFile(file);
-        User user = userRepository.findByUsername(username).orElseThrow();
+        User user = userRepository.findByEmail(email).orElseThrow();
         FeedBack feedBack = feedBackRepository.findById(feedback).orElseThrow();
         Specialite specialite1 = specialiteRepository.findById(specialite).orElseThrow();
         entretien.setFeedback(feedBack);
@@ -70,6 +70,7 @@ public class EntretientService {
     }
 
     public Optional<Entretien> getEntretienById(String id) {
+
         return entretienRepository.findById(id);
     }
 }

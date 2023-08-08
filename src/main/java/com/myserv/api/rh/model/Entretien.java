@@ -39,6 +39,7 @@ public class Entretien {
     @JsonFormat(pattern = "HH:mm")
     private String time ;
 
+    @DBRef
     @Indexed(name = "feedback")
     private FeedBack feedback ;
 

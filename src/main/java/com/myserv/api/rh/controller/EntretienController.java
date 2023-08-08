@@ -31,10 +31,12 @@ public class  EntretienController {
     }
 
    @PostMapping(value = "/api/v1/entretien/create" )
-    public String place(@RequestBody Entretien entretien, Principal principal,@RequestParam String feedbackId, @RequestParam String specialite) throws IOException {
+    public String place(@RequestBody Entretien entretien,
+                         Principal principal,
+                        @RequestParam String specialite) throws IOException {
         String username = principal.getName();
 
-        entretientService.createEntretien(entretien, username, feedbackId, specialite);
+        entretientService.createEntretien(entretien, username, specialite);
         return "cava";
     }
 

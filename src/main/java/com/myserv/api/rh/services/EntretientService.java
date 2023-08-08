@@ -44,22 +44,22 @@ public class EntretientService {
         return feedBackRepository.findAll();
     }
 
-    public Entretien createEntretien(Entretien entretien, String email, String feedbackId, String specialiteId)  throws IOException {
-
-       /* if (file != null && !file.isEmpty()) {
-            String loadFileId = fileService.addFile(file);
-            entretien.setLoadFileId(loadFileId);
-        }*/
-        //String loadFileId = fileService.addFile(file);
+    public Entretien createEntretien(Entretien entretien, String email, String specialiteId)  throws IOException {
         User user = userRepository.findByEmail(email).orElseThrow();
-        FeedBack feedBack = feedBackRepository.findById(feedbackId).orElseThrow();
-        Specialite specialite1 = specialiteRepository.findById(specialiteId).orElseThrow();
-        entretien.setFeedback(feedBack);
+        Specialite specialite = specialiteRepository.findById(specialiteId).orElseThrow();
+
+        FeedBack defaultFeedback = getDefaultFeedback();
+        entretien.setFeedback(defaultFeedback);
         entretien.setRecruteur(user);
-        entretien.setSpecialite(specialite1);
-        //entretien.setLoadFileId(loadFileId);
+        entretien.setSpecialite(specialite);
+
         return entretienRepository.save(entretien);
 
+    }
+    private FeedBack getDefaultFeedback() {
+        FeedBack defaultFeedback = new FeedBack();
+        defaultFeedback.setId("64b1af43128f38495981525a");
+        return defaultFeedback;
     }
 
     private String saveFile(MultipartFile file) throws IOException {

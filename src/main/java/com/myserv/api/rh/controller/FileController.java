@@ -17,7 +17,6 @@ import java.io.IOException;
 //@CrossOrigin("*")
 @RequestMapping("/api/file")
 public class FileController {
-
     @Autowired
     private FileService fileService;
 

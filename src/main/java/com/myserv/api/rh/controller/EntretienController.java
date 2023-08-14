@@ -7,6 +7,8 @@ import com.myserv.api.rh.services.EntretientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,8 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "*", maxAge = 3600)
-public class  EntretienController {
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
+public class EntretienController {
 
     @Autowired
     private EntretienRepository entretienRepository;
@@ -30,25 +32,31 @@ public class  EntretienController {
         this.entretientService = entretientService;
     }
 
-   @PostMapping(value = "/api/v1/entretien/create" )
-    public String place(@RequestBody Entretien entretien,
-                         Principal principal,
+    @PostMapping(value = "/api/v1/entretien/create" )
+    public Entretien place(@RequestBody Entretien entretien,
+                        Principal principal,
                         @RequestParam String specialite) throws IOException {
         String username = principal.getName();
 
         entretientService.createEntretien(entretien, username, specialite);
-        return "cava";
+        return entretien;
+    }
+
+    @PostMapping(value = "/test")
+    public String test(@RequestBody Entretien entretien, @RequestParam String specialite) throws IOException {
+
+        return "cava"+ specialite;
     }
 
     @GetMapping("/api/v1/entretien/all")
-    public List<Entretien> all(){
+    public List<Entretien> all() {
         return entretienRepository.findAll();
 
     }
 
     @GetMapping("/api/v1/entretien/specialite")
-    public List<Entretien> getentretienBySpecialiteId(String specialiteId){
-        return  entretienRepository.findBySpecialiteId(specialiteId);
+    public List<Entretien> getentretienBySpecialiteId(String specialiteId) {
+        return entretienRepository.findBySpecialiteId(specialiteId);
     }
 
 }

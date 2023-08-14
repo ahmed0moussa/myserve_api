@@ -45,22 +45,18 @@ public class EntretientService {
     }
 
     public Entretien createEntretien(Entretien entretien, String email, String specialiteId)  throws IOException {
+        String DefaultFeedback = "64b1af43128f38495981525a";
         User user = userRepository.findByEmail(email).orElseThrow();
         Specialite specialite = specialiteRepository.findById(specialiteId).orElseThrow();
-
-        FeedBack defaultFeedback = getDefaultFeedback();
-        entretien.setFeedback(defaultFeedback);
+        FeedBack feedback = feedBackRepository.findById(DefaultFeedback).orElseThrow();
+        entretien.setFeedback(feedback);
         entretien.setRecruteur(user);
         entretien.setSpecialite(specialite);
 
         return entretienRepository.save(entretien);
 
     }
-    private FeedBack getDefaultFeedback() {
-        FeedBack defaultFeedback = new FeedBack();
-        defaultFeedback.setId("64b1af43128f38495981525a");
-        return defaultFeedback;
-    }
+
 
     private String saveFile(MultipartFile file) throws IOException {
         // Implement your file saving logic here and return the generated loadFileId

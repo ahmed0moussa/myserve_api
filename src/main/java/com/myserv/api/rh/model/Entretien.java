@@ -21,11 +21,11 @@ public class Entretien {
     @Id
     private String id ;
 
-    @Indexed(name = "nom")
-    private String nom ;
+    @Indexed(name = "firstName")
+    private String firstName ;
 
-    @Indexed(name = "prenom")
-    private String prenom ;
+    @Indexed(name = "lastName")
+    private String lastName ;
 
     @JsonFormat(pattern="yyyy-MM-dd")
     @Indexed(name = "datecreation")
@@ -39,7 +39,7 @@ public class Entretien {
     @JsonFormat(pattern = "HH:mm")
     private String time ;
 
-    @DBRef
+
     @Indexed(name = "feedback")
     private FeedBack feedback ;
 
@@ -52,12 +52,8 @@ public class Entretien {
     @Indexed(name = "recruteur")
     private User recruteur ;
 
-
-    @Indexed(name = "loadfileid")
-    private String loadFileId ; ;
-
-
-
+    @Indexed(name = "file")
+    private String File ; ;
 
 
 }

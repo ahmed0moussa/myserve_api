@@ -7,20 +7,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Document()
-public class CompteRendu {
+public class QuestionTECH {
     @Id
     private String id ;
 
-    @Indexed(name = "infocandidate")
-    private Infocandidate infocandidate;
-
-    @Indexed(name = "repenseQRH")
-    private RepenseQRH repenseQRH;
-
-    @Indexed(name = "repenseQTECH")
-    private RepenseQTECH repenseQTECH;
-
-
-
-
+    @Indexed(name = "TextQuestion")
+    private String TextQuestion;
 }

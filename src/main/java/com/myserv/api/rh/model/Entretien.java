@@ -53,7 +53,7 @@ public class Entretien {
     private User recruteur ;
 
     @Indexed(name = "file")
-    private String File ; ;
+    private String file ; ;
 
 
 }

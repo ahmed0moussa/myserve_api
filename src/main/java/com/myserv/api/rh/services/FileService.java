@@ -1,57 +1,114 @@
 package com.myserv.api.rh.services;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
-import com.mongodb.client.gridfs.model.GridFSFile;
-import com.myserv.api.rh.model.LoadFile;
-import org.apache.commons.io.IOUtils;
+import com.myserv.api.rh.exception.FileStorageException;
+import com.myserv.api.rh.configifile.CvStorge;
+import com.myserv.api.rh.configifile.FileStorageProperties;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.gridfs.GridFsOperations;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.stream.Stream;
 
 @Service
-public class FileService {
+public class FileService implements CvStorge {
+
+
+    private final Path cvLocation;
 
     @Autowired
-    private GridFsTemplate template;
 
-    @Autowired
-    private GridFsOperations operations;
+    public FileService(FileStorageProperties fileStorageProperties) {
+        this.cvLocation= Paths.get(fileStorageProperties.getUploadFileCvDir()).toAbsolutePath().normalize();
+        try {
 
-    public String addFile(MultipartFile upload) throws IOException {
-
-        DBObject metadata = new BasicDBObject();
-        metadata.put("fileSize", upload.getSize());
-
-        Object fileID = template.store(upload.getInputStream(), upload.getOriginalFilename(), upload.getContentType(), metadata);
-
-        return fileID.toString();
+        }catch (Exception e){
+            throw new FileStorageException("could not create the directory where the uploaded images will be stored",e);
+        }
     }
 
 
-    public LoadFile downloadFile(String id) throws IOException {
+    @Override
+    public String store(MultipartFile file) {
+        String fileName= StringUtils.cleanPath(file.getOriginalFilename());
+        try {
+            if(fileName.contains("..")){
+                throw new FileStorageException("File name contains invalid path sequence "+fileName);
+            }
+            Files.copy(file.getInputStream(),this.cvLocation.resolve(fileName), StandardCopyOption.REPLACE_EXISTING);
+        }catch (Exception e){
+            throw new RuntimeException("Fail",e);
+        }
+        return file.getOriginalFilename();
+    }
 
-        GridFSFile gridFSFile = template.findOne( new Query(Criteria.where("_id").is(id)) );
+    @Override
+    public Resource loadResource(String filename) {
+        try {
+            Path path = cvLocation.resolve(filename);
+            Resource resource = new UrlResource(path.toUri());
+            if (resource.exists() || resource.isReadable()){
+                return resource;
+            }else {
+                throw new RuntimeException("Fail");
+            }
+        }catch (MalformedURLException e){
+            throw new RuntimeException("Fail");
+        }
+    }
 
-        LoadFile loadFile = new LoadFile();
 
-        if (gridFSFile != null && gridFSFile.getMetadata() != null) {
-            loadFile.setFilename( gridFSFile.getFilename() );
 
-            loadFile.setFileType( gridFSFile.getMetadata().get("_contentType").toString() );
 
-            loadFile.setFileSize( gridFSFile.getMetadata().get("fileSize").toString() );
+    @Override
+    public void init() {
+        try {
+            Files.createDirectories(cvLocation);
+        }catch (IOException e){
+            throw new RuntimeException("Could not initialize storage");
+        }
+    }
 
-            loadFile.setFile( IOUtils.toByteArray(operations.getResource(gridFSFile).getInputStream()) );
+    @Override
+    public Stream<Path> loadFiles() {
+        try {
+            return Files.walk(this.cvLocation,1).filter(item->!item.equals(this.cvLocation)).map(this.cvLocation::relativize);
+        }catch (IOException e){
+            throw new RuntimeException("Failed to read stored images");
+        }
+    }
+
+
+
+
+    @Override
+    public ResponseEntity<Resource> downloadCvFile(String imageName, HttpServletRequest request) {
+
+        Resource resource = this.loadResource(imageName);
+        String contentType = null;
+        try {
+            if (resource!=null){
+                contentType=request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+            }
+
+        }catch (IOException e){
+            e.printStackTrace();
         }
 
-        return loadFile;
+        return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""+resource.getFilename()+"\"")
+                .body(resource);
     }
-
 }

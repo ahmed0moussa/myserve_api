@@ -13,4 +13,7 @@ public class QuestionTECH {
 
     @Indexed(name = "TextQuestion")
     private String TextQuestion;
+
+    @Indexed(name = "specialite")
+    private Specialite specialite;
 }
